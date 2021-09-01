@@ -1,8 +1,5 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
+  <my-navigation />
   <router-view/>
 </template>
 
@@ -28,3 +25,9 @@
   color: #42b983;
 }
 </style>
+<script>
+import MyNavigation from "@/components/my/my-navigation";
+export default {
+  components: {MyNavigation}
+}
+</script>

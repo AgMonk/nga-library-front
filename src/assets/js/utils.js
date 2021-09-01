@@ -1,4 +1,7 @@
 // 获取对象类型
+
+import {ElMessage} from "element-plus";
+
 let getTypeOf = function (obj) {
     let type = Object.prototype.toString.call(obj);
     return type.replace("[object ", "").replace("]", "");
@@ -62,7 +65,7 @@ console.slf4j = function (template, ...data) {
 String.prototype.format = function (...data) {
     return format(this, ...data)
 }
-console.clear()
+// console.clear()
 
 export const copyObj = (obj) => JSON.parse(JSON.stringify(obj))
 
@@ -91,8 +94,7 @@ export const getClientWidth = () => {
 //反转义
 export const unEscape = (text) => {
     let temp = document.createElement("div");
-    temp.innerHTML = !text ? "" : text
-        .replace(/<br\/>/g, '\n');
+    temp.innerHTML = text ? text.replace(/<br\/>/g, '\n') : "";
     let output = temp.innerText || temp.textContent;
     temp = null;
     return output;
@@ -111,7 +113,8 @@ export const setTextareaSelection = (textarea, start, end) => {
 // 在文本框光标的当前位置插入指定文本
 export const insertTextToTextarea = (
     textarea
-    , {startText, endText = ""
+    , {
+        startText, endText = ""
         , startPosition = textarea.selectionStart
         , endPosition = textarea.selectionEnd
         , innerText = true
@@ -120,10 +123,20 @@ export const insertTextToTextarea = (
     // console.log(startPosition+":"+endPosition)
     let text = textarea.value;
     let t1 = text.substring(0, startPosition);
-    let t2 = innerText?text.substring(startPosition,endPosition):"";
+    let t2 = innerText ? text.substring(startPosition, endPosition) : "";
     let t3 = text.substring(endPosition);
-    textarea.value = t1 + startText+ t2 + endText + t3
+    textarea.value = t1 + startText + t2 + endText + t3
     textarea.focus();
-    let index = t1.length +t2.length + startText.length;
+    let index = t1.length + t2.length + startText.length;
     setTextareaSelection(textarea, index);
 }
+
+export const debugLog = (debug, ...params) => {
+    if (debug) {
+        console.log(...params)
+    }
+}
+
+export const nowSecond = () => "" + Math.floor(new Date().getTime() / 1000)
+
+export const functionNotImplement = () => ElMessage.warning("本功能尚未实现")
