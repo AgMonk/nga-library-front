@@ -1,5 +1,7 @@
 import { createStore } from 'vuex'
 import user from "@/store/user";
+import library from "@/store/library";
+import threadList from "@/store/threadList";
 
 export default createStore({
   state: {
@@ -9,6 +11,6 @@ export default createStore({
   actions: {
   },
   modules: {
-    user,
+    user,library,threadList
   }
 })
