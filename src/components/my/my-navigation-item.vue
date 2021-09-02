@@ -1,9 +1,10 @@
 <template>
-  <el-submenu v-if="route.children" :index="path">
+  <el-sub-menu v-if="route&&route.children" :index="path">
+    <!--suppress HtmlUnknownAttribute -->
     <template #title>{{ route.name }}</template>
     <my-navigation-item v-for="(child,i) in route.children" :key="i" :route="child" :parent-path="path"/>
-  </el-submenu>
-  <el-menu-item v-else :index="path">
+  </el-sub-menu>
+  <el-menu-item v-else-if="route" :index="path">
     {{ route.name }}
   </el-menu-item>
 </template>
@@ -18,6 +19,7 @@ export default {
   },
   methods: {},
   mounted() {
+    console.log(this.route.children)
   },
   props: {
     route: {

@@ -14,13 +14,14 @@
     <el-main>
       <el-table v-if="threads[JSON.stringify(params)]" :data="threads[JSON.stringify(params)].data.records">
         <el-table-column prop="subject" label="主题">
+          <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
-            <!--            <el-link target="_blank" :href="`https://bbs.nga.cn/read.php?tid=`+s.row.tid">{{ unEscape(s.row.subject) }}</el-link>-->
             <nga-thread-link :thread="s.row"/>
           </template>
         </el-table-column>
 
         <el-table-column prop="author" label="作者" width="150">
+          <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
             <el-link target="_blank" :href="`https://bbs.nga.cn/nuke.php?func=ucp&uid=`+s.row.authorId">{{ s.row.author }}</el-link>
           </template>
@@ -62,6 +63,7 @@ export default {
   mounted() {
     this.$store.state.threadList.params.condition.fid = this.fid;
     this.getPage();
+    this.$store.dispatch("threadType/getAll")
   },
   unmounted() {
     this.params.page = 1;

@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import user from "@/store/user";
 import library from "@/store/library";
 import threadList from "@/store/threadList";
+import threadType from "@/store/threadType";
 
 export default createStore({
   state: {
@@ -11,6 +12,6 @@ export default createStore({
   actions: {
   },
   modules: {
-    user,library,threadList
+    user,library,threadList,threadType
   }
 })

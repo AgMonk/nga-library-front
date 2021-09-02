@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-
+import Home from '@/views/Home.vue'
+import Manage from "@/views/Manage";
 export const routes = [
   {
     path:`/`,
@@ -19,7 +19,13 @@ export const routes = [
   {
     path:`/manage`,
     name:`管理`,
-    component: ()=>import("../views/Me"),
+    component: Manage,
+    children:[
+      { path:`threadType`,
+        name:`主题类型`,
+        component: ()=>import("../views/manage/ThreadType"),
+      }
+    ]
   }
 ]
 
