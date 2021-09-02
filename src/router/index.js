@@ -20,9 +20,6 @@ export const routes = [
     path:`/manage`,
     name:`管理`,
     component: ()=>import("../views/Me"),
-    children:[
-
-    ]
   }
 ]
 

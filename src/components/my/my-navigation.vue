@@ -9,7 +9,7 @@
       @select="select"
       router
       active-text-color="#ffd04b">
-  <my-navigation-item v-for="(route,i) in routes" :key="i" :route="route" parent-path=""/>
+  <my-navigation-item v-for="(route,i) in routes.filter(i=>i.hasOwnProperty(`name`))" :key="i" :route="route" parent-path=""/>
   </el-menu>
 </template>
 
@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       routes,
-      activeIndex:"/me",
+      activeIndex:location.pathname,
     }
   },
   computed: {
@@ -40,7 +40,6 @@ export default {
     }
   },
   mounted() {
-    // console.log(routes)
   },
 }
 
