@@ -36,6 +36,7 @@
           </el-form-item>
           <el-form-item label="上级分类" v-if="dialogTitle!==`添加主分类`">
             <el-cascader
+                filterable
                 clearable
                 style="width:100%"
                 v-model="parentUuid"

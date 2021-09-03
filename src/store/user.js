@@ -49,6 +49,9 @@ export default {
     },
     getters: {
         isPermitted: (state) => (permission) => {
+            if (!state.user || !state.user.roles){
+                return false;
+            }
             const [namespace, action, target] = permission.split(":");
             const permissions = state.user.roles.flatMap(i => i.permissions).map(i => `${i.namespace}:${i.action}:${i.target}`)
 
