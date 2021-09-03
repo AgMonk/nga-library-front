@@ -42,7 +42,7 @@
                 :options="types[fid].data"
                 :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true }"
                 @change="nodeChange"
-            ></el-cascader>
+            />
           </el-form-item>
           <el-form-item>
             <el-button @click="submit" type="primary" >提交</el-button>

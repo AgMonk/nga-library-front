@@ -9,6 +9,21 @@
           layout="prev, pager, next, jumper"
           :total="total">
       </el-pagination>
+     <el-form label-width="100" inline>
+       <el-form-item label="主题分类">
+         <el-cascader
+             v-if="types[fid]"
+             clearable
+             v-model="params.condition.threadTypeUuid"
+             :options="[{name:`全部`,uuid:`*`},{name:`未分类`,uuid:``},...types[fid].data]"
+             :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"
+             @change="getPage"
+         />
+       </el-form-item>
+       <el-form-item label="标题">
+         <el-input v-model="params.condition.subject" @change="getPage" clearable />
+       </el-form-item>
+     </el-form>
     </el-header>
 
     <el-main>
@@ -26,6 +41,23 @@
             <el-link target="_blank" :href="`https://bbs.nga.cn/nuke.php?func=ucp&uid=`+s.row.authorId">{{ s.row.author }}</el-link>
           </template>
         </el-table-column>
+        <el-table-column width="150" prop="threadType" label="主题分类">
+          <!--suppress HtmlUnknownAttribute -->
+          <template #default="s">
+            <span v-if="s.row.threadType">{{s.row.threadType}}</span>
+<!--            <span v-if="!s.row.threadType" style="color: red;font-weight: bold">未分类</span>-->
+            <span v-if="!s.row.threadType">
+            <el-cascader
+                 v-if="types[fid]"
+                 clearable
+                 v-model="s.row.threadTypeUuid"
+                 :options="[...types[fid].data]"
+                 :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"
+                 @change="setThreadType(s.row.threadTypeUuid,s.row.tid)"
+             />
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column width="80" prop="contentLength" label="正文长度"/>
         <el-table-column width="150" prop="postTimestamp.timeString" label="发布时间"/>
         <el-table-column width="150" prop="lastModifyTimestamp.timeString" label="最后修改"/>
@@ -41,6 +73,7 @@
 <script>
 import {unEscape} from "@/assets/js/utils";
 import NgaThreadLink from "@/components/nga/nga-thread-link";
+import {mapState} from "vuex";
 
 export default {
   name: "thread-list",
@@ -48,20 +81,35 @@ export default {
   data() {
     return {
       total: 100,
-      params: this.$store.state.threadList.params,
-      threads: this.$store.state.threadList.threads,
+      params: {
+        page: 1,
+        size: 10,
+        condition: {
+          fid: this.fid,
+          threadTypeUuid:"",
+        }
+      },
+      threadTypeUuid: ``,
     }
+  },
+  computed: {
+    ...mapState({
+      types: state => state.threadType.types,
+      threads: state => state.threadList.threads,
+    })
   },
   methods: {
     unEscape,
     getPage() {
-      this.$store.dispatch("threadList/getPage").then(res => {
+      this.$store.dispatch("threadList/getPage",this.params).then(res => {
         this.total = res.total
       })
     },
+    setThreadType(typeUuid,tid){
+      this.$store.dispatch("threadList/setThreadType",{typeUuid,tid,params:this.params})
+    }
   },
   mounted() {
-    this.$store.state.threadList.params.condition.fid = this.fid;
     this.getPage();
     this.$store.dispatch("threadType/getAll",this.fid)
   },

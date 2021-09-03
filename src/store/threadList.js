@@ -8,41 +8,40 @@ export default {
     namespaced: true,
     state: {
         threads: {},
-        params: {
-            page: 1,
-            size: 10,
-            condition: {
-                fid: 0,
-            }
-        },
     },
     mutations: {},
     actions: {
-        page: ({dispatch, commit, state}, payload) => {
-            let data = state.params;
+        page: ({dispatch, commit, state}, data) => {
             return request({
                 url: `/${prefix}/page`,
                 data
             }).then(res => {
                 state.threads[JSON.stringify(data)] = {
-                    timestamp:new Date().getTime(),
-                    data:res.data,
+                    timestamp: new Date().getTime(),
+                    data: res.data,
                 }
                 return res.data;
             });
         },
-        getPage: ({dispatch, commit, state}, payload) => {
-            let data = state.params;
+        getPage: ({dispatch, commit, state}, data) => {
             let now = new Date().getTime()
             let cache = state.threads[JSON.stringify(data)];
 
             if (cache && (now - cache.timestamp) < 60 * 1000) {
                 return new Promise(resolve => resolve(cache.data))
             } else {
-                return dispatch("page");
+                return dispatch("page", data);
             }
         },
-method: ({dispatch, commit, state}, payload) => {
+        setThreadType: ({dispatch, commit, state}, {typeUuid, tid, params}) => {
+            return request({
+                url: `/${prefix}/setThreadType`,
+                params: {typeUuid, tid}
+            }).then(() => {
+                return dispatch("page", params)
+            })
+        },
+        method: ({dispatch, commit, state}, payload) => {
 
         },
 
