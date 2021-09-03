@@ -52,7 +52,8 @@
         <el-table-column prop="author" label="作者" width="150">
           <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
-            <el-link target="_blank" :href="`https://bbs.nga.cn/nuke.php?func=ucp&uid=`+s.row.authorId">{{ s.row.author }}</el-link>
+            <span v-if="s.row.authorId.startsWith(`#anony_`)">匿名作者</span>
+            <el-link v-else target="_blank" :href="`https://bbs.nga.cn/nuke.php?func=ucp&uid=`+s.row.authorId">{{ s.row.author }}</el-link>
           </template>
         </el-table-column>
         <el-table-column width="500" prop="threadType" label="主题分类">
