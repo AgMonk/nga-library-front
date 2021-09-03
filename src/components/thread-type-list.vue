@@ -8,7 +8,6 @@
           v-if="types[fid]"
           :data="types[fid].data"
           node-key="uuid"
-          @node-click="nodeClick"
           :expand-on-click-node="false">
         <!--suppress HtmlUnknownAttribute -->
         <template #default="{ node, data }">
@@ -20,6 +19,7 @@
           <span>
             <i class="el-icon-plus"/>
           &nbsp;
+            <i class="el-icon-edit"/>
           &nbsp;
             <i class="el-icon-delete"/>
           </span>
