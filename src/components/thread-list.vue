@@ -63,7 +63,7 @@ export default {
   mounted() {
     this.$store.state.threadList.params.condition.fid = this.fid;
     this.getPage();
-    this.$store.dispatch("threadType/getAll")
+    this.$store.dispatch("threadType/getAll",this.fid)
   },
   unmounted() {
     this.params.page = 1;

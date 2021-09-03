@@ -8,32 +8,25 @@ export default {
     namespaced: true,
     state: {
         types: {},
-        params: {
-            uuid: undefined,
-            name: "",
-            parentUuid: undefined,
-            fid: -60157311,
-        },
     },
     mutations: {},
     actions: {
-        add: ({dispatch, state}) => request({
+        add: ({dispatch, state},data) => request({
             url: `/${prefix}/add`,
-            data: state.params
-        }).then(() => dispatch("findAll")),
+            data
+        }).then(() => dispatch("findAll",data.fid)),
 
-        update: ({dispatch, state}) => request({
+        update: ({dispatch, state},data) => request({
             url: `/${prefix}/update`,
-            data: state.params
-        }).then(() => dispatch("findAll")),
+            data
+        }).then(() => dispatch("findAll",data.fid)),
 
-        del: ({dispatch, commit, state}, uuid) => request({
+        del: ({dispatch, commit, state}, {uuid,fid}) => request({
             url: `/${prefix}/del`,
             params: {uuid}
-        }).then(() => dispatch("findAll")),
+        }).then(() => dispatch("findAll",fid)),
 
-        findAll: ({state}) => {
-            let fid = state.params.fid.toString();
+        findAll: ({state},fid) => {
             return request({
                 url: `/${prefix}/findAll`,
                 params:{fid},
@@ -45,15 +38,14 @@ export default {
                 return res.data;
             });
         },
-        getAll: ({dispatch, state}) => {
-            let fid = state.params.fid.toString();
+        getAll: ({dispatch, state},fid) => {
             let now = new Date().getTime()
             let cache = state.types[fid];
 
             if (cache && (now - cache.timestamp) < 60 * 1000) {
                 return new Promise(resolve => resolve(cache.data))
             } else {
-                return dispatch("findAll");
+                return dispatch("findAll",fid);
             }
         },
         method: () => {

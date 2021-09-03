@@ -30,7 +30,6 @@ export default {
   },
   methods: {},
   mounted() {
-    this.$store.dispatch("threadType/getAll")
   },
   watch: {},
   props: {},
