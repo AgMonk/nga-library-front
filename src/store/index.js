@@ -3,6 +3,7 @@ import user from "@/store/user";
 import library from "@/store/library";
 import threadList from "@/store/threadList";
 import threadType from "@/store/threadType";
+import threadTypeCondition from "@/store/threadTypeCondition";
 
 export default createStore({
   state: {
@@ -12,6 +13,6 @@ export default createStore({
   actions: {
   },
   modules: {
-    user,library,threadList,threadType
+    user,library,threadList,threadType,threadTypeCondition
   }
 })

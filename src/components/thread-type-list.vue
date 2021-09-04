@@ -29,7 +29,7 @@
         </template>
       </el-tree>
 
-      <el-dialog v-model="showDialog" :title="dialogTitle">
+      <el-dialog v-model="dialogShow" :title="dialogTitle">
         <el-form :model="params" label-width="80px">
           <el-form-item label="分类名称">
             <el-input v-model="params.name" clearable ref="nameInput"/>
@@ -75,7 +75,7 @@ export default {
     return {
       parentUuid: [],
       dialogTitle:"",
-      showDialog: false,
+      dialogShow: false,
       params:{},
     }
   },
@@ -98,7 +98,7 @@ export default {
       this.parentUuid = findPath(node);
       this.parentUuid.splice(this.parentUuid.length-1,1)
       this.params = {...copyObj(data), fid:this.fid,}
-      this.showDialog = true;
+      this.dialogShow = true;
       this.$nextTick(function() {
         this.$refs.nameInput.select()
       })
@@ -113,7 +113,7 @@ export default {
         parentUuid: this.parentUuid[this.parentUuid.length-1],
         fid:this.fid,
       }
-      this.showDialog = true;
+      this.dialogShow = true;
       this.$nextTick(function() {
         this.$refs.nameInput.select()
       })
@@ -135,7 +135,7 @@ export default {
         parentUuid: undefined,
         fid:this.fid,
       }
-      this.showDialog = true;
+      this.dialogShow = true;
       this.$nextTick(function() {
         this.$refs.nameInput.select()
       })
@@ -147,13 +147,13 @@ export default {
         case "添加子分类":
           this.$store.dispatch("threadType/add",this.params).then(()=>{
             this.$message.success("添加成功")
-            this.showDialog = false;
+            this.dialogShow = false;
           })
           break;
         case "修改分类":
           this.$store.dispatch("threadType/update",this.params).then(()=>{
             this.$message.success("修改成功")
-            this.showDialog = false;
+            this.dialogShow = false;
           })
           break;
       }
