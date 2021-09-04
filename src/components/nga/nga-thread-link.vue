@@ -42,7 +42,7 @@ export default {
             case `蓝色`:
               this.type = `primary`;
               break;
-            case `粽色`:
+            case `棕色`:
               this.type = `warning`;
               break;
           }

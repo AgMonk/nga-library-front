@@ -46,6 +46,17 @@
           <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
             <nga-thread-link :thread="s.row"/>
+            <el-tooltip v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)" placement="top" v-for="(item,i) in s.row.typeOptions" :key="i">
+              <template #content>
+<!--                全名:{{item.fullPath.join(`/`)}}-->
+<!--                <br>-->
+                得分:{{item.score}}
+              </template>
+              <el-tag size="mini" style="cursor:pointer" @click="setThreadType(item.uuid,s.row.tid)">
+<!--                {{item.name}}-->
+                {{item.fullPath.join(`/`)}}
+              </el-tag>
+            </el-tooltip>
           </template>
         </el-table-column>
 
@@ -56,7 +67,7 @@
             <el-link v-else target="_blank" :href="`https://bbs.nga.cn/nuke.php?func=ucp&uid=`+s.row.authorId">{{ s.row.author }}</el-link>
           </template>
         </el-table-column>
-        <el-table-column width="500" prop="threadType" label="主题分类">
+        <el-table-column width="400" prop="threadType" label="主题分类">
           <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
             <el-cascader

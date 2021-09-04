@@ -9,8 +9,8 @@
           v-if="types[fid]"
           :data="types[fid].data"
           node-key="uuid"
-          :default-expand-all="true"
           :expand-on-click-node="false">
+<!--          :default-expand-all="true"-->
         <!--suppress HtmlUnknownAttribute -->
         <template #default="{ node, data }">
         <span class="custom-tree-node">
@@ -46,7 +46,8 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button @click="submit" type="primary" >提交</el-button>
+            <el-button @click="submit(false)" type="primary" >连续添加</el-button>
+            <el-button @click="submit(true)" type="primary" >提交</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -141,13 +142,19 @@ export default {
       })
     },
 
-    submit(){
+    submit(e){
       switch (this.dialogTitle) {
         case "添加主分类":
         case "添加子分类":
           this.$store.dispatch("threadType/add",this.params).then(()=>{
-            this.$message.success("添加成功")
-            this.dialogShow = false;
+              this.$message.success("添加成功")
+            if (e) {
+              this.dialogShow = false;
+            }else{
+              this.$nextTick(function() {
+                this.$refs.nameInput.select()
+              })
+            }
           })
           break;
         case "修改分类":
