@@ -26,11 +26,13 @@ export const routes = [
                 path: `threadType`,
                 name: `主题类型`,
                 component: () => import("../views/manage/ThreadType"),
+                permission:`主题类型:修改:*`,
             },
             {
                 path: `threadTypeCondition`,
                 name: `分类条件`,
                 component: () => import("../views/manage/ThreadTypeCondition"),
+                permission:`主题类型:修改:*`,
             },
 
         ]
