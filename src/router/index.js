@@ -26,19 +26,25 @@ export const routes = [
                 path: `threadType`,
                 name: `主题类型`,
                 component: () => import("../views/manage/ThreadType"),
-                permission:`主题类型:修改:*`,
+                permission: `主题类型:修改:*`,
             },
             {
                 path: `threadTypeCondition`,
                 name: `分类条件`,
                 component: () => import("../views/manage/ThreadTypeCondition"),
-                permission:`主题类型:修改:*`,
+                permission: `主题类型:修改:*`,
             },
- {
+            {
                 path: `ngaAccount`,
                 name: `NGA账号`,
                 component: () => import("../views/manage/NgaAccount"),
-                permission:`NGA账号:添加:*`,
+                permission: `NGA账号:添加:*`,
+            },
+            {
+                path: `library`,
+                name: `图书馆`,
+                component: () => import("../views/manage/NgaLibrary"),
+                permission: `图书馆:添加:*`,
             },
 
         ]
