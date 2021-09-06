@@ -34,6 +34,12 @@ export const routes = [
                 component: () => import("../views/manage/ThreadTypeCondition"),
                 permission:`主题类型:修改:*`,
             },
+ {
+                path: `ngaAccount`,
+                name: `NGA账号`,
+                component: () => import("../views/manage/NgaAccount"),
+                permission:`NGA账号:添加:*`,
+            },
 
         ]
     }
