@@ -12,7 +12,7 @@ export default {
     },
     mutations: {},
     actions: {
-        add: ({dispatch, state}, {cookie}) => request({
+        add: ({dispatch, state}, cookie) => request({
             url: `/${prefix}/add`,
             data: {cookie}
         }).then(() => dispatch("findAll")),
