@@ -1,6 +1,4 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Home from '@/views/Home.vue'
-import Manage from "@/views/Manage";
 
 export const routes = [
     {
@@ -10,7 +8,7 @@ export const routes = [
     {
         path: '/home',
         name: '图书馆',
-        component: Home
+        component: () => import("../views/Home")
     },
     {
         path: `/me`,
@@ -20,7 +18,7 @@ export const routes = [
     {
         path: `/manage`,
         name: `管理`,
-        component: Manage,
+        component: () => import("../views/Manage"),
         children: [
             {
                 path: `threadType`,
@@ -42,9 +40,15 @@ export const routes = [
             },
             {
                 path: `library`,
-                name: `图书馆`,
+                name: `图书馆管理`,
                 component: () => import("../views/manage/NgaLibrary"),
                 permission: `图书馆:添加:*`,
+            },
+            {
+                path: `forum`,
+                name: `版面管理`,
+                component: () => import("../views/manage/Forum"),
+                permission: `版面:添加:*`,
             },
 
         ]

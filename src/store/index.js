@@ -1,10 +1,11 @@
-import { createStore } from 'vuex'
+import {createStore} from 'vuex'
 import user from "@/store/user";
 import library from "@/store/library";
 import threadList from "@/store/threadList";
 import threadType from "@/store/threadType";
 import threadTypeCondition from "@/store/threadTypeCondition";
 import ngaAccount from "@/store/ngaAccount";
+import forum from "@/store/forum";
 
 export default createStore({
   state: {
@@ -14,6 +15,6 @@ export default createStore({
   actions: {
   },
   modules: {
-    user,library,threadList,threadType,threadTypeCondition,ngaAccount
+    user, library, threadList, threadType, threadTypeCondition, ngaAccount, forum
   }
 })

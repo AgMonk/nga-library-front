@@ -12,6 +12,7 @@
      <el-form label-width="100" inline>
        <el-form-item label="主题分类">
          <el-cascader
+             size="medium"
              filterable
              v-if="types[fid]"
              clearable
