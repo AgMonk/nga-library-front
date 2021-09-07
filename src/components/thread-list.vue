@@ -34,7 +34,7 @@
              v-model="threadTypeUuid"
              :options="[...types[fid].data]"
              :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"
-             @change="setThreadType(threadTypeUuid,threads[JSON.stringify(params)].data.records.map(i=>i.tid).join(`,`));threadTypeUuid=undefined;"
+             @change="setThreadType(threadTypeUuid,selection.map(i=>i.tid).join(`,`));threadTypeUuid=undefined;"
          />
        </el-form-item>
      </el-form>
@@ -42,16 +42,17 @@
     </el-header>
 
     <el-main>
-      <el-table v-if="threads[JSON.stringify(params)]" :data="threads[JSON.stringify(params)].data.records">
+      <el-table v-if="threads[JSON.stringify(params)]" :data="threads[JSON.stringify(params)].data.records" @selection-change="handleSelectionChange">
+        <el-table-column v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)" type="selection" width="30"/>
         <el-table-column prop="subject" label="主题">
           <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
             <nga-thread-link :thread="s.row"/>
             <el-tooltip v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)" placement="top" v-for="(item,i) in s.row.typeOptions" :key="i">
               <template #content>
-<!--                全名:{{item.fullPath.join(`/`)}}-->
-<!--                <br>-->
-                得分:{{item.score}}
+                <!--                全名:{{item.fullPath.join(`/`)}}-->
+                <!--                <br>-->
+                得分:{{ item.score }}
               </template>
               <el-tag size="mini" style="cursor:pointer" @click="setThreadType(item.uuid,s.row.tid)">
 <!--                {{item.name}}-->
@@ -111,11 +112,12 @@ export default {
         size: 10,
         condition: {
           fid: this.fid,
-          threadTypeUuid:"*",
-          includeChildren:true,
+          threadTypeUuid: "*",
+          includeChildren: true,
         }
       },
       threadTypeUuid: ``,
+      selection: [],
     }
   },
   computed: {
@@ -125,13 +127,17 @@ export default {
     }),
   },
   methods: {
+    handleSelectionChange(e) {
+      this.selection = e;
+      console.log(e)
+    },
     unEscape,
     getPage() {
-      this.$store.dispatch("threadList/getPage",this.params).then(res => {
+      this.$store.dispatch("threadList/getPage", this.params).then(res => {
         this.total = res.total
       })
     },
-    setThreadType(typeUuid,tid){
+    setThreadType(typeUuid, tid) {
       if (this.$store.getters[`user/isPermitted`](`主题:修改:分类`)) {
         this.$store.dispatch("threadList/setThreadType", {typeUuid, tid, params: this.params}).then(res => {
           this.$message.success("设置成功")

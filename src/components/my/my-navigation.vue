@@ -40,6 +40,8 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch("user/getStatus")
+
   },
 }
 

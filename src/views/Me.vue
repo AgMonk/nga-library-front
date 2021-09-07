@@ -63,7 +63,7 @@
 
 <script>
 
-import {mapState,mapGetters} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import MyButton from "@/components/my/my-button";
 import {functionNotImplement} from "@/assets/js/utils";
 import MyTag from "@/components/my/my-tag";
@@ -104,7 +104,6 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch("user/getStatus")
   },
 }
 
