@@ -1,6 +1,7 @@
 // 主题列表
 
 import {request} from "@/assets/js/request";
+import {copyObj} from "@/assets/js/utils";
 
 const prefix = `NgaThread`;
 
@@ -9,23 +10,17 @@ export default {
     state: {
         threads: {},
         params: {
-            page: 1,
-            size: 10,
-            condition: {
-                fid: 0,
-                threadTypeUuid: "*",
-                includeChildren: true,
-            }
+
         },
     },
     mutations: {
-        setParams(state, params) {
-            state.params = params;
+        setParams(state, {key, params}) {
+            state.params[key] = copyObj(params);
         }
     },
     actions: {
-        page: ({dispatch, commit, state}) => {
-            const data = state.params
+        page: ({dispatch, commit, state}, fid) => {
+            const data = state.params[fid]
             return request({
                 url: `/${prefix}/page`,
                 data
@@ -37,23 +32,23 @@ export default {
                 return res.data;
             });
         },
-        getPage: ({dispatch, commit, state}) => {
-            const data = state.params
+        getPage: ({dispatch, commit, state}, fid) => {
+            const data = state.params[fid]
             let now = new Date().getTime()
             let cache = state.threads[JSON.stringify(data)];
 
             if (cache && (now - cache.timestamp) < 60 * 1000) {
                 return new Promise(resolve => resolve(cache.data))
             } else {
-                return dispatch("page", data);
+                return dispatch("page", fid);
             }
         },
-        setThreadType: ({dispatch, commit, state}, {typeUuid, tid, params}) => {
+        setThreadType: ({dispatch, commit, state}, {typeUuid, tid, fid}) => {
             return request({
                 url: `/${prefix}/setThreadType`,
                 params: {typeUuid, tid}
             }).then(() => {
-                return dispatch("page", params)
+                return dispatch("page", fid)
             })
         },
         method: ({dispatch, commit, state}, payload) => {

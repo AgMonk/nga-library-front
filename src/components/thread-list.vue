@@ -12,7 +12,7 @@
       <el-form inline label-width="100">
         <el-form-item label="主题分类">
           <el-cascader
-              v-if="types[fid]"
+              v-if="types[fid] && params.condition"
               v-model="params.condition.threadTypeUuid"
               :options="[{name:`全部`,uuid:`*`},{name:`未分类`,uuid:``},...types[fid].data]"
               :props="cascaderProps"
@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import {copyObj, unEscape} from "@/assets/js/utils";
+import {unEscape} from "@/assets/js/utils";
 import NgaThreadLink from "@/components/nga/nga-thread-link";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 
@@ -109,7 +109,15 @@ export default {
       cascaderProps: {expandTrigger: 'hover', label: `name`, value: `uuid`, checkStrictly: true, emitPath: false},
 
       total: 100,
-      params: copyObj(this.$store.state.threadList.params),
+      params: {
+        page: 1,
+        size: 10,
+        condition: {
+          fid: this.fid,
+          threadTypeUuid: "*",
+          includeChildren: true,
+        }
+      },
       threadTypeUuid: ``,
       selection: [],
     }
@@ -131,21 +139,20 @@ export default {
     unEscape,
     getPageData() {
       this.params.condition.fid = this.fid
-      this.setParams(this.params);
-      this.getPage().then(res => {
+      this.setParams({key: this.fid, params: this.params});
+      this.getPage(this.fid).then(res => {
         this.total = res.total
       })
     },
     setType(typeUuid, tid) {
       if (this.isPermitted(`主题:修改:分类`)) {
-        this.setThreadType({typeUuid, tid, params: this.params}).then(res => {
+        this.setThreadType({typeUuid, tid, fid: this.fid}).then(res => {
           this.$message.success("设置成功")
           this.total = res.total
         })
       }
     },
     onMount() {
-
       this.getPageData();
       this.$store.dispatch("threadType/getAll", this.fid)
     }
@@ -155,7 +162,6 @@ export default {
   },
   mounted() {
     this.onMount()
-
   },
   watch: {
     "fid": {
