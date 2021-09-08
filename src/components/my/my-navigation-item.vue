@@ -27,7 +27,7 @@ export default {
     }),
   },
   mounted() {
-    console.log(this.route.children)
+    // console.log(this.route.children)
   },
   props: {
     route: {

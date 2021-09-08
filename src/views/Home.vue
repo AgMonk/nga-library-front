@@ -3,7 +3,7 @@
     <el-main>
       <el-tabs v-model="library.currentLibrary">
         <el-tab-pane v-for="(item,i) in libraries" :label="item.name" :name="item.fid" :key="i">
-          <thread-list :fid="item.fid" v-if="library.currentLibrary===item.fid"/>
+          <thread-list :fid="item.fid"/>
         </el-tab-pane>
       </el-tabs>
     </el-main>

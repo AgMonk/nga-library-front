@@ -3,41 +3,41 @@
     <!--  <el-container direction="horizontal">-->
     <el-header>
       <el-pagination
-          @current-change="getPage"
+          @current-change="getPageData"
           v-model:currentPage="params.page"
           :page-size="params.size"
           layout="total, prev, pager, next, jumper"
           :total="total">
       </el-pagination>
-     <el-form label-width="100" inline>
-       <el-form-item label="主题分类">
-         <el-cascader
-             size="medium"
-             filterable
-             v-if="types[fid]"
-             clearable
-             v-model="params.condition.threadTypeUuid"
-             :options="[{name:`全部`,uuid:`*`},{name:`未分类`,uuid:``},...types[fid].data]"
-             :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"
-             @change="getPage"
-         />
-         <el-checkbox v-model="params.condition.includeChildren"  @change="getPage" label="包含子类" />
-       </el-form-item>
-       <el-form-item label="标题">
-         <el-input v-model="params.condition.subject" @change="getPage" clearable />
-       </el-form-item>
-       <el-form-item label="批量设置主题分类" v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)">
-         <el-cascader
-             filterable
-             v-if="types[fid]"
-             clearable
-             v-model="threadTypeUuid"
-             :options="[...types[fid].data]"
-             :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"
-             @change="setThreadType(threadTypeUuid,selection.map(i=>i.tid).join(`,`));threadTypeUuid=undefined;"
-         />
-       </el-form-item>
-     </el-form>
+      <el-form inline label-width="100">
+        <el-form-item label="主题分类">
+          <el-cascader
+              v-if="types[fid]"
+              v-model="params.condition.threadTypeUuid"
+              :options="[{name:`全部`,uuid:`*`},{name:`未分类`,uuid:``},...types[fid].data]"
+              :props="cascaderProps"
+              clearable
+              filterable
+              size="medium"
+              @change="getPageData"
+          />
+          <el-checkbox v-model="params.condition.includeChildren" label="包含子类" @change="getPageData"/>
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="params.condition.subject" clearable @change="getPageData"/>
+        </el-form-item>
+        <el-form-item v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)" label="批量设置主题分类">
+          <el-cascader
+              v-if="types[fid]"
+              v-model="threadTypeUuid"
+              :options="[...types[fid].data]"
+              :props="cascaderProps"
+              clearable
+              filterable
+              @change="setType(threadTypeUuid,selection.map(i=>i.tid).join(`,`));threadTypeUuid=undefined;"
+          />
+        </el-form-item>
+      </el-form>
 
     </el-header>
 
@@ -54,9 +54,9 @@
                 <!--                <br>-->
                 得分:{{ item.score }}
               </template>
-              <el-tag size="mini" style="cursor:pointer" @click="setThreadType(item.uuid,s.row.tid)">
-<!--                {{item.name}}-->
-                {{item.fullPath.join(`/`)}}
+              <el-tag size="mini" style="cursor:pointer" @click="setType(item.uuid,s.row.tid)">
+                <!--                {{item.name}}-->
+                {{ item.fullPath.join(`/`) }}
               </el-tag>
             </el-tooltip>
           </template>
@@ -76,12 +76,12 @@
                 style="width:100%"
                 filterable
                 v-if="types[fid]"
-                 clearable
-                 v-model="s.row.threadTypeUuid"
-                 :options="[...types[fid].data]"
-                 :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"
-                 @change="setThreadType(s.row.threadTypeUuid,s.row.tid)"
-             />
+                v-model="s.row.threadTypeUuid"
+                :options="[...types[fid].data]"
+                :props="cascaderProps"
+                clearable
+                @change="setType(s.row.threadTypeUuid,s.row.tid)"
+            />
           </template>
         </el-table-column>
         <el-table-column width="80" prop="contentLength" label="正文长度"/>
@@ -97,25 +97,19 @@
 </template>
 
 <script>
-import {unEscape} from "@/assets/js/utils";
+import {copyObj, unEscape} from "@/assets/js/utils";
 import NgaThreadLink from "@/components/nga/nga-thread-link";
-import {mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "thread-list",
   components: {NgaThreadLink},
   data() {
     return {
+      cascaderProps: {expandTrigger: 'hover', label: `name`, value: `uuid`, checkStrictly: true, emitPath: false},
+
       total: 100,
-      params: {
-        page: 1,
-        size: 10,
-        condition: {
-          fid: this.fid,
-          threadTypeUuid: "*",
-          includeChildren: true,
-        }
-      },
+      params: copyObj(this.$store.state.threadList.params),
       threadTypeUuid: ``,
       selection: [],
     }
@@ -127,34 +121,48 @@ export default {
     }),
   },
   methods: {
+    ...mapMutations("threadList", [`setParams`]),
+    ...mapActions("threadList", [`getPage`, `setThreadType`]),
     handleSelectionChange(e) {
       this.selection = e;
       console.log(e)
     },
     unEscape,
-    getPage() {
-      this.$store.dispatch("threadList/getPage", this.params).then(res => {
+    getPageData() {
+      this.params.condition.fid = this.fid
+      this.setParams(this.params);
+      this.getPage().then(res => {
         this.total = res.total
       })
     },
-    setThreadType(typeUuid, tid) {
+    setType(typeUuid, tid) {
       if (this.$store.getters[`user/isPermitted`](`主题:修改:分类`)) {
-        this.$store.dispatch("threadList/setThreadType", {typeUuid, tid, params: this.params}).then(res => {
+        this.setThreadType({typeUuid, tid, params: this.params}).then(res => {
           this.$message.success("设置成功")
           this.total = res.total
         })
       }
-    }
-  },
-  mounted() {
-    this.getPage();
-    this.$store.dispatch("threadType/getAll",this.fid)
+    },
+    onMount() {
 
+      this.getPageData();
+      this.$store.dispatch("threadType/getAll", this.fid)
+    }
   },
   unmounted() {
     this.params.page = 1;
   },
-  watch: {},
+  mounted() {
+    this.onMount()
+
+  },
+  watch: {
+    "fid": {
+      handler: function (e) {
+        this.onMount()
+      }
+    }
+  },
   props: {
     fid: {required: true}
   },

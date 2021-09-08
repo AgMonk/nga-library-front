@@ -8,10 +8,24 @@ export default {
     namespaced: true,
     state: {
         threads: {},
+        params: {
+            page: 1,
+            size: 10,
+            condition: {
+                fid: 0,
+                threadTypeUuid: "*",
+                includeChildren: true,
+            }
+        },
     },
-    mutations: {},
+    mutations: {
+        setParams(state, params) {
+            state.params = params;
+        }
+    },
     actions: {
-        page: ({dispatch, commit, state}, data) => {
+        page: ({dispatch, commit, state}) => {
+            const data = state.params
             return request({
                 url: `/${prefix}/page`,
                 data
@@ -23,7 +37,8 @@ export default {
                 return res.data;
             });
         },
-        getPage: ({dispatch, commit, state}, data) => {
+        getPage: ({dispatch, commit, state}) => {
+            const data = state.params
             let now = new Date().getTime()
             let cache = state.threads[JSON.stringify(data)];
 
