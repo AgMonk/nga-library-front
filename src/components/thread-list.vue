@@ -161,6 +161,8 @@ export default {
     this.params.page = 1;
   },
   mounted() {
+    const cache = this.$store.state.threadList.params[this.fid];
+    this.params = cache ? cache : this.params;
     this.onMount()
   },
   watch: {
