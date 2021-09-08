@@ -26,7 +26,7 @@
         <el-form-item label="标题">
           <el-input v-model="params.condition.subject" clearable @change="getPageData"/>
         </el-form-item>
-        <el-form-item v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)" label="批量设置主题分类">
+        <el-form-item v-if="isPermitted(`主题:修改:分类`)" label="批量设置主题分类">
           <el-cascader
               v-if="types[fid]"
               v-model="threadTypeUuid"
@@ -43,12 +43,12 @@
 
     <el-main>
       <el-table v-if="threads[JSON.stringify(params)]" :data="threads[JSON.stringify(params)].data.records" @selection-change="handleSelectionChange">
-        <el-table-column v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)" type="selection" width="30"/>
+        <el-table-column v-if="isPermitted(`主题:修改:分类`)" type="selection" width="30"/>
         <el-table-column prop="subject" label="主题">
           <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
             <nga-thread-link :thread="s.row"/>
-            <el-tooltip v-if="$store.getters[`user/isPermitted`](`主题:修改:分类`)" placement="top" v-for="(item,i) in s.row.typeOptions" :key="i">
+            <el-tooltip v-for="(item,i) in s.row.typeOptions" v-if="isPermitted(`主题:修改:分类`)" :key="i" placement="top">
               <template #content>
                 <!--                全名:{{item.fullPath.join(`/`)}}-->
                 <!--                <br>-->
@@ -99,7 +99,7 @@
 <script>
 import {copyObj, unEscape} from "@/assets/js/utils";
 import NgaThreadLink from "@/components/nga/nga-thread-link";
-import {mapActions, mapMutations, mapState} from "vuex";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
   name: "thread-list",
@@ -119,6 +119,7 @@ export default {
       types: state => state.threadType.types,
       threads: state => state.threadList.threads,
     }),
+    ...mapGetters("user", [`isPermitted`]),
   },
   methods: {
     ...mapMutations("threadList", [`setParams`]),
@@ -136,7 +137,7 @@ export default {
       })
     },
     setType(typeUuid, tid) {
-      if (this.$store.getters[`user/isPermitted`](`主题:修改:分类`)) {
+      if (this.isPermitted(`主题:修改:分类`)) {
         this.setThreadType({typeUuid, tid, params: this.params}).then(res => {
           this.$message.success("设置成功")
           this.total = res.total
