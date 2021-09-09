@@ -72,16 +72,19 @@
         <el-table-column width="400" prop="threadType" label="主题分类">
           <!--suppress HtmlUnknownAttribute -->
           <template #default="s">
-            <el-cascader
-                style="width:100%"
-                filterable
-                v-if="types[fid]"
-                v-model="s.row.threadTypeUuid"
-                :options="[...types[fid].data]"
-                :props="cascaderProps"
-                clearable
-                @change="setType(s.row.threadTypeUuid,s.row.tid)"
-            />
+            <div v-if="types[fid]">
+              <el-cascader
+                  v-if="isPermitted(`主题:修改:分类`)"
+                  v-model="s.row.threadTypeUuid"
+                  :options="[...types[fid].data]"
+                  :props="cascaderProps"
+                  clearable
+                  filterable
+                  style="width:100%"
+                  @change="setType(s.row.threadTypeUuid,s.row.tid)"
+              />
+              <span v-else-if="s.row.threadType && s.row.threadType.fullPath">{{ s.row.threadType.fullPath.join('/') }}</span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column width="80" prop="contentLength" label="正文长度"/>
