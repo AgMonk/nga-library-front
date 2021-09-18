@@ -14,6 +14,26 @@
 
     <el-main>
       <el-table v-if="conditions[JSON.stringify(params)]" :data="conditions[JSON.stringify(params)].data.records">
+        <el-table-column label="操作" width="80">
+          <template #default="s">
+            <i class="el-icon-edit" style="cursor: pointer" @click="edit(s.row)"/>
+            &nbsp;
+            <i class="el-icon-delete" @click="del(s.row.uuid)"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="匹配类型">
+          <template #default="s">
+            <!--            <el-cascader-->
+            <!--                style="width:100%"-->
+            <!--                disabled-->
+            <!--                v-if="types[fid]"-->
+            <!--                v-model="s.row.threadTypeUuid"-->
+            <!--                :options="types[fid].data"-->
+            <!--                :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"-->
+            <!--            />-->
+            <span>{{ s.row.threadType.fullPath.join('/') }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="标题颜色" prop="titleColor"/>
         <el-table-column label="必备关键字" prop="hasAllKeywords"/>
         <el-table-column label="必无关键字" prop="hasNotKeywords"/>
@@ -22,41 +42,13 @@
         <el-table-column label="最大正文长度" prop="maxContentLength" width="80"/>
         <el-table-column label="发表时间起" prop="postTimestampStart.date" width="100"/>
         <el-table-column label="发表时间止" prop="postTimestampEnd.date" width="100"/>
-        <el-table-column label="匹配类型">
-          <template #default="s">
-            <el-cascader
-                style="width:100%"
-                disabled
-                v-if="types[fid]"
-                v-model="s.row.threadTypeUuid"
-                :options="types[fid].data"
-                :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="80">
-          <template #default="s">
-            <i class="el-icon-edit" @click="edit(s.row)" style="cursor: pointer"/>
-            &nbsp;
-                      <i class="el-icon-delete"  @click="del(s.row.uuid)"/>
-          </template>
-        </el-table-column>
       </el-table>
 
       <el-dialog v-model="dialogShow" :title="dialogTitle">
         <el-form :model="condition" label-width="120px" inline>
           <el-form-item label="标题颜色">
             <el-select v-model="condition.titleColor" multiple>
-              <el-option value="灰色普通">灰色普通</el-option>
-              <el-option value="灰色加粗">灰色加粗</el-option>
-              <el-option value="红色普通">红色普通</el-option>
-              <el-option value="红色加粗">红色加粗</el-option>
-              <el-option value="绿色普通">绿色普通</el-option>
-              <el-option value="绿色加粗">绿色加粗</el-option>
-              <el-option value="蓝色普通">蓝色普通</el-option>
-              <el-option value="蓝色加粗">蓝色加粗</el-option>
-              <el-option value="棕色普通">棕色普通</el-option>
-              <el-option value="棕色加粗">棕色加粗</el-option>
+              <el-option v-for="(color,i) in titleColor" :key="i" :value="color">{{ color }}</el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="匹配类型">
@@ -109,8 +101,9 @@
         </el-form>
         <el-form>
           <el-form-item>
-            <el-button type="warning" @click="createEmptyCondition" v-if="dialogTitle===`添加分类`">重置</el-button>
             <el-button type="success" @click="submit">提交</el-button>
+            <el-button v-if="dialogTitle===`添加分类`" type="warning" @click="createEmptyCondition">重置</el-button>
+            <el-button v-if="dialogTitle===`修改分类`" type="success" @click="dialogTitle=`添加分类`;submit()">复制</el-button>
           </el-form-item>
         </el-form>
 
@@ -148,6 +141,7 @@ export default {
     ...mapState({
       types: state => state.threadType.types,
       conditions: state => state.threadTypeCondition.conditions,
+      titleColor: state => state.threadList.titleColor,
     })
   },
   methods: {
@@ -173,14 +167,14 @@ export default {
       this.dialogTitle = "修改分类";
       this.dialogShow = true;
       const condition = {...copyObj(e)};
-      condition.postTimestampStart = condition.postTimestampStart?condition.postTimestampStart:{};
-      condition.postTimestampEnd = condition.postTimestampEnd?condition.postTimestampEnd:{};
+      condition.postTimestampStart = condition.postTimestampStart ? condition.postTimestampStart : {};
+      condition.postTimestampEnd = condition.postTimestampEnd ? condition.postTimestampEnd : {};
       this.condition = condition
     },
-    del(uuid){
-     if (confirm(`确认删除`)){
-       this.$store.dispatch("threadTypeCondition/del", {uuid,params:this.params}).then(res => this.total = res.total)
-     }
+    del(uuid) {
+      if (confirm(`确认删除`)) {
+        this.$store.dispatch("threadTypeCondition/del", {uuid, params: this.params}).then(res => this.total = res.total)
+      }
     },
     getPage() {
       this.$store.dispatch("threadTypeCondition/getPage", this.params).then(res => this.total = res.total)
@@ -195,14 +189,14 @@ export default {
       }
       switch (this.dialogTitle) {
         case "添加分类":
-          this.$store.dispatch("threadTypeCondition/add", {data, params:this.params}).then(res => {
+          this.$store.dispatch("threadTypeCondition/add", {data, params: this.params}).then(res => {
             this.$message.success("添加成功")
             this.dialogShow = false;
             this.total = res.total
           })
           break;
         case "修改分类":
-          this.$store.dispatch("threadTypeCondition/update", {data, params:this.params}).then(res => {
+          this.$store.dispatch("threadTypeCondition/update", {data, params: this.params}).then(res => {
             this.$message.success("修改成功")
             this.dialogShow = false;
             this.total = res.total

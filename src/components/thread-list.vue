@@ -10,6 +10,11 @@
           :total="total">
       </el-pagination>
       <el-form inline label-width="100">
+        <el-form-item label="标题颜色">
+          <el-select v-if="params.condition" v-model="params.condition.titleFont" clearable @change="getPageData">
+            <el-option v-for="(color,i) in titleColor" :key="i" :value="color">{{ color }}</el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="主题分类">
           <el-cascader
               v-if="types[fid] && params.condition"
@@ -129,6 +134,7 @@ export default {
     ...mapState({
       types: state => state.threadType.types,
       threads: state => state.threadList.threads,
+      titleColor: state => state.threadList.titleColor,
     }),
     ...mapGetters("user", [`isPermitted`]),
   },

@@ -9,9 +9,19 @@ export default {
     namespaced: true,
     state: {
         threads: {},
-        params: {
-
-        },
+        params: {},
+        titleColor: [
+            `灰色普通`,
+            `灰色加粗`,
+            `红色普通`,
+            `红色加粗`,
+            `绿色普通`,
+            `绿色加粗`,
+            `蓝色普通`,
+            `蓝色加粗`,
+            `棕色普通`,
+            `棕色加粗`,
+        ],
     },
     mutations: {
         setParams(state, {key, params}) {
