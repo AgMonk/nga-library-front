@@ -50,6 +50,12 @@ export const routes = [
                 component: () => import("../views/manage/Forum"),
                 permission: `版面:添加:*`,
             },
+            {
+                path: `repost`,
+                name: `转发管理`,
+                component: () => import("../views/manage/Repost"),
+                permission: `转发:查询:*`,
+            },
 
         ]
     }
