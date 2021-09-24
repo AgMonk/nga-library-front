@@ -21,7 +21,7 @@
           </template>
         </el-table-column>
         <el-table-column label="状态" prop="status" width="150px"/>
-        <el-table-column label="尝试次数" prop="retry" width="80px"/>
+        <el-table-column label="重试次数" prop="retry" width="80px"/>
         <el-table-column label="计划发布" prop="time" width="150px">
           <template #default="s">
             {{ new Date(s.row.time * 1000).format("yyyy-MM-dd hh:mm:ss") }}
@@ -216,10 +216,7 @@ export default {
     },
     getOne(uuid) {
       return this.get(uuid).then(res => {
-        const data = res.data;
-        data.time = (data.time).toString();
-        data.executeTime = data.executeTime ? (data.executeTime).toString() : undefined;
-        this.data = data;
+        this.data = res;
         this.parseParams()
       })
     },
@@ -258,6 +255,7 @@ export default {
         this.update(this.data).then(res => {
           this.$message.success("修改成功");
           this.dialogShow = false;
+          this.data = res;
           this.page()
         }).catch(reason => {
           this.$message.warning(reason.join(" & "))

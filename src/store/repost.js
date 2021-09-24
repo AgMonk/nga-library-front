@@ -35,6 +35,11 @@ export default {
         get: ({dispatch, commit, state}, uuid) => request({
             url: `/${prefix}/get`,
             params: {uuid}
+        }).then(res => {
+            const data = res.data;
+            data.time = (data.time).toString();
+            data.executeTime = data.executeTime ? (data.executeTime).toString() : undefined;
+            return data;
         }),
         deleteFile: ({dispatch, commit, state}, {uuid, fileName}) => request({
             url: `/${prefix}/deleteFile`,
