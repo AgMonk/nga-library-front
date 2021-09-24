@@ -3,6 +3,10 @@
     <!--  <el-container direction="horizontal">-->
     <el-header>
       <el-button type="primary" @click="addRepost">添加转发</el-button>
+      <el-button type="primary" @click="refresh">刷新</el-button>
+      <div>
+        <my-clock/>
+      </div>
     </el-header>
     <el-main>
       转发
@@ -16,16 +20,26 @@
             <i class="el-icon-delete" style="cursor:pointer" @click="deleteRepost(s.row.uuid)"/>
           </template>
         </el-table-column>
-        <el-table-column label="状态" prop="status" width="80px"/>
+        <el-table-column label="状态" prop="status" width="150px"/>
         <el-table-column label="尝试次数" prop="retry" width="80px"/>
-        <el-table-column label="发布时间" prop="time" width="150px">
+        <el-table-column label="计划发布" prop="time" width="150px">
           <template #default="s">
             {{ new Date(s.row.time * 1000).format("yyyy-MM-dd hh:mm:ss") }}
+          </template>
+        </el-table-column>
+        <el-table-column label="实际发布" prop="time" width="150px">
+          <template #default="s">
+            <span v-if="s.row.executeTime">{{ new Date(s.row.executeTime * 1000).format("yyyy-MM-dd hh:mm:ss") }}</span>
           </template>
         </el-table-column>
         <el-table-column label="回复主题" prop="tid" width="120px">
           <template #default="s">
             <el-link :href="`https://bbs.nga.cn/read.php?tid=`+s.row.tid" target="_blank">{{ s.row.tid }}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="回复地址" prop="pid" width="120px">
+          <template #default="s">
+            <el-link v-if="s.row.pid" :href="`https://bbs.nga.cn/read.php?pid=`+s.row.pid" target="_blank">{{ s.row.pid }}</el-link>
           </template>
         </el-table-column>
         <el-table-column label="发布账号" width="160px">
@@ -45,6 +59,7 @@
                 v-model="data.time"
                 placeholder="选择时间"
                 type="datetime"
+                @change="setHeader"
                 value-format="X">
             </el-date-picker>
           </el-form-item>
@@ -105,9 +120,11 @@
 <script>
 import {mapActions, mapState} from "vuex";
 import {copyObj} from "@/assets/js/utils";
+import MyClock from "@/components/my/my-clock";
 
 export default {
   name: "Repost",
+  components: {MyClock},
   data() {
     return {
       dialogShow: false,
@@ -122,8 +139,34 @@ export default {
     ...mapActions(`ngaAccount`, {
       getAllAccount: `getAll`
     }),
-    onSuccess() {
-      this.getOne(this.data.uuid)
+    refresh() {
+      this.page().then(() => this.$message.success("刷新成功"))
+    },
+    onSuccess(response, file, fileList) {
+      console.log(1)
+      this.getOne(this.data.uuid).then(() => this.parseSource())
+
+    },
+    parseSource() {
+      if (!this.data.images || this.data.images.length === 0) {
+        return;
+      }
+      const name = this.data.images[0]
+      console.log(`解析文件名:${name}`)
+      //判断是否为pixiv图片
+      const pixiv_pattern = /(\d+)_p\d+/
+      let m1 = pixiv_pattern.exec(name)
+      if (m1) {
+        this.data.params.source = `pixiv.net/artworks/${m1[1]}`
+        this.update(this.data)
+      }
+      //判断是否为推特图片
+      const twitter_pattern = /(\d{19})/
+      let m2 = twitter_pattern.exec(name)
+      if (m2) {
+        this.data.params.source = `twitter.com/i/status/${m2[1]}`
+        this.update(this.data)
+      }
     },
     deleteImg(uuid, fileName) {
       if (confirm("确认删除?")) {
@@ -175,6 +218,7 @@ export default {
       return this.get(uuid).then(res => {
         const data = res.data;
         data.time = (data.time).toString();
+        data.executeTime = data.executeTime ? (data.executeTime).toString() : undefined;
         this.data = data;
         this.parseParams()
       })
@@ -205,11 +249,21 @@ export default {
         this.add(this.data).then(res => {
           this.dialogTitle = `修改转发`
           this.$message.success("添加成功");
+          this.data = res.data
+          this.page()
+        }).catch(reason => {
+          this.$message.warning(reason.join(" & "))
+        })
+      } else if (this.dialogTitle === `修改转发`) {
+        this.update(this.data).then(res => {
+          this.$message.success("修改成功");
+          this.dialogShow = false;
           this.page()
         }).catch(reason => {
           this.$message.warning(reason.join(" & "))
         })
       }
+
     },
   },
   computed: {
