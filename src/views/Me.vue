@@ -77,8 +77,8 @@ export default {
       loggedActiveName:"用户信息",
       params:{
         login: {
-          username:"administrator",
-          password:"123456",
+          username: "",
+          password: "",
         },
         reg:{},
       }
