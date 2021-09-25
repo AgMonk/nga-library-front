@@ -9,7 +9,13 @@
       </div>
     </el-header>
     <el-main>
-      转发
+      <el-pagination
+          v-model:currentPage="params.page"
+          :page-size="params.size"
+          :total="total"
+          layout="total, prev, pager, next, jumper"
+          @current-change="pageChange">
+      </el-pagination>
 
 
       <el-table v-if="reposts[JSON.stringify(params)]" :data="reposts[JSON.stringify(params)].data.records">
@@ -84,9 +90,8 @@
               <span v-for="(item,i) in data.images"
                     :key="i">
                 <el-image
-
                     :preview-src-list="data.images"
-                    :src="`/img/${data.uuid}/${item}`"
+                    :src="item"
                     style="width: 100px; height: 100px"
                 />
                 <i class="el-icon-delete" style="cursor: pointer" @click="deleteImg(data.uuid,item)"/></span>
@@ -132,6 +137,7 @@ export default {
       data: {},
       accounts: [],
       params: {page: 1, size: 10,},
+      total: 10,
     }
   },
   methods: {
@@ -139,8 +145,20 @@ export default {
     ...mapActions(`ngaAccount`, {
       getAllAccount: `getAll`
     }),
+    findPage() {
+      return this.getPage(this.params).then(res => {
+        this.total = res.total
+      })
+    },
+    pageChange(e) {
+      this.params.page = e;
+      this.findPage()
+    },
     refresh() {
-      this.page().then(() => this.$message.success("刷新成功"))
+      this.page().then(res => {
+        this.$message.success("刷新成功")
+        this.total = res.total
+      })
     },
     onSuccess(response, file, fileList) {
       console.log(1)
@@ -246,8 +264,8 @@ export default {
         this.add(this.data).then(res => {
           this.dialogTitle = `修改转发`
           this.$message.success("添加成功");
-          this.data = res.data
-          this.page()
+          this.data = res
+          this.refresh()
         }).catch(reason => {
           this.$message.warning(reason.join(" & "))
         })
@@ -256,7 +274,7 @@ export default {
           this.$message.success("修改成功");
           this.dialogShow = false;
           this.data = res;
-          this.page()
+          this.refresh()
         }).catch(reason => {
           this.$message.warning(reason.join(" & "))
         })
@@ -265,10 +283,10 @@ export default {
     },
   },
   computed: {
-    ...mapState(`repost`, [`reposts`])
+    ...mapState(`repost`, [`reposts`]),
   },
   mounted() {
-    this.getPage(this.params)
+    this.findPage()
     this.getAllAccount().then(res => {
       this.accounts = res
       console.log(this.accounts)

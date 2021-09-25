@@ -39,6 +39,7 @@ export default {
             const data = res.data;
             data.time = (data.time).toString();
             data.executeTime = data.executeTime ? (data.executeTime).toString() : undefined;
+            data.images = data.images ? data.images.map(i => encodeURI(i)).map(i => `/img/${data.uuid}/${i}`) : [];
             return data;
         }),
         deleteFile: ({dispatch, commit, state}, {uuid, fileName}) => request({
