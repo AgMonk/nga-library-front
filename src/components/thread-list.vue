@@ -94,7 +94,7 @@
         </el-table-column>
         <el-table-column width="80" prop="contentLength" label="正文长度"/>
         <el-table-column width="150" prop="postTimestamp.timeString" label="发布时间"/>
-        <el-table-column width="150" prop="lastModifyTimestamp.timeString" label="最后修改"/>
+        <el-table-column label="最后修改" prop="lastEdit.timeString" width="150"/>
         <el-table-column width="150" prop="lastCheck.timeString" label="更新时间"/>
       </el-table>
 

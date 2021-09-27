@@ -14,8 +14,8 @@ request.interceptors.response.use(response => {
     if (data.code === 2000) {
         return data
     }
-    ElMessage.error(data.message);
-    throw data.data;
+    // ElMessage.error(data.message);
+    throw data;
 }, (error) => {
     console.error(error)
     ElMessage.error(error.message);

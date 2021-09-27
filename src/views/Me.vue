@@ -39,14 +39,28 @@
 
 
                <el-form-item label-width="0">
-                 <my-button text="修改密码" @click="functionNotImplement"  />
-                 <my-button text="修改信息" @click="functionNotImplement"  />
+                 <my-button text="修改密码" @click="dialogShow=true;params.editPassword={}"/>
+                 <my-button text="修改信息" @click="functionNotImplement"/>
                </el-form-item>
              </el-form>
              <br>
              <br>
              <my-button type="danger" text="登出" @click="logout"/>
 
+             <el-dialog v-model="dialogShow" title="修改密码">
+               <el-form :model="params.editPassword">
+                 <el-form-item label="旧密码">
+                   <el-input v-model="params.editPassword.oldPass" clearable show-password type="password"/>
+                 </el-form-item>
+                 <el-form-item label="新密码">
+                   <el-input v-model="params.editPassword.newPass" clearable show-password type="password"/>
+                 </el-form-item>
+                 <el-form-item label-width="0">
+                   <my-button text="修改" @click="changePass"/>
+                 </el-form-item>
+               </el-form>
+
+             </el-dialog>
 
            </el-tab-pane>
            <el-tab-pane label="其他" name="其他">
@@ -63,7 +77,7 @@
 
 <script>
 
-import {mapGetters, mapState} from "vuex";
+import {mapActions, mapGetters, mapState} from "vuex";
 import MyButton from "@/components/my/my-button";
 import {functionNotImplement} from "@/assets/js/utils";
 import MyTag from "@/components/my/my-tag";
@@ -73,14 +87,16 @@ export default {
   components: {MyTag, MyButton},
   data() {
     return {
-      loginActiveName:"登陆",
-      loggedActiveName:"用户信息",
-      params:{
+      dialogShow: false,
+      loginActiveName: "登陆",
+      loggedActiveName: "用户信息",
+      params: {
         login: {
           username: "",
           password: "",
         },
-        reg:{},
+        reg: {},
+        editPassword: {},
       }
     }
   },
@@ -94,17 +110,25 @@ export default {
   },
   methods: {
     functionNotImplement,
-    login(){
-      this.$store.dispatch("user/login",this.params.login)
+    ...mapActions('user', [`editPassword`]),
+    login() {
+      this.$store.dispatch("user/login", this.params.login)
     },
-    logout(){
-      if (confirm("确认登出?")){
+    logout() {
+      if (confirm("确认登出?")) {
         this.$store.dispatch("user/logout")
       }
-    }
+    },
+    changePass() {
+      this.editPassword(this.params.editPassword).then(() => {
+        this.dialogShow = false;
+      })
+    },
   },
   mounted() {
-    this.$store.dispatch("user/getStatus")
+    this.$store.dispatch("user/getStatus").catch(reason => {
+      this.$message.error(reason.message)
+    })
 
   },
 }

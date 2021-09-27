@@ -22,7 +22,7 @@ export default {
         logout: ({dispatch, commit, state}) => request({
             url: "/User/logout"
         }).then(res => {
-            state.user =undefined;
+            state.user = undefined;
             ElMessage.success(res.message)
         }),
         getStatus: ({dispatch, commit, state}) => {
@@ -39,8 +39,19 @@ export default {
                 }).catch((err) => {
                     state.user = undefined;
                     state.timestamp = now
+                    throw err
                 })
             }
+        },
+        editPassword({dispatch, commit, state}, {oldPass, newPass}) {
+            return request({
+                url: "/User/editPassword",
+                params: {oldPass, newPass}
+            }).then(res => {
+                state.user = undefined;
+                ElMessage.success(res.message)
+                return res
+            })
         },
         method({dispatch, commit, state}) {
 
@@ -49,7 +60,7 @@ export default {
     },
     getters: {
         isPermitted: (state) => (permission) => {
-            if (!state.user || !state.user.roles){
+            if (!state.user || !state.user.roles) {
                 return false;
             }
             const [namespace, action, target] = permission.split(":");
@@ -66,7 +77,7 @@ export default {
             ) {
                 return true;
             }
-            return  false;
+            return false;
         }
     },
 }
