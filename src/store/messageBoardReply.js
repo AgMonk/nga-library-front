@@ -8,7 +8,7 @@ const prefix = `MessageBoardReply`;
 export default {
     namespaced: true,
     state: {
-        threads: {},
+        replies: {},
         params: {
             page: 1,
             size: 10,
@@ -21,8 +21,8 @@ export default {
         },
     },
     mutations: {
-        setParams(state, {key, params}) {
-            state.params[key] = copyObj(params);
+        setParams(state, params) {
+            state.params = copyObj(params);
         }
     },
     actions: {
@@ -32,7 +32,7 @@ export default {
                 url: `/${prefix}/page`,
                 data
             }).then(res => {
-                state.threads[JSON.stringify(data)] = {
+                state.replies[JSON.stringify(data)] = {
                     timestamp: new Date().getTime(),
                     data: res.data,
                 }
@@ -42,7 +42,7 @@ export default {
         getPage: ({dispatch, commit, state}) => {
             const data = state.params
             let now = new Date().getTime()
-            let cache = state.threads[JSON.stringify(data)];
+            let cache = state.replies[JSON.stringify(data)];
 
             if (cache && (now - cache.timestamp) < 60 * 1000) {
                 return new Promise(resolve => resolve(cache.data))

@@ -62,6 +62,12 @@ export const routes = [
                 component: () => import("../views/manage/MessageBoard"),
                 permission: `留言板:查询:*`,
             },
+            {
+                path: `messageBoardReply`,
+                name: `留言板回复`,
+                component: () => import("../views/manage/MessageBoardReply"),
+                permission: `留言板:查询:*`,
+            },
 
         ]
     }
