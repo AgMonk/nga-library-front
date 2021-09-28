@@ -92,10 +92,21 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column width="80" prop="contentLength" label="正文长度"/>
-        <el-table-column width="150" prop="postTimestamp.timeString" label="发布时间"/>
-        <el-table-column label="最后修改" prop="lastEdit.timeString" width="150"/>
-        <el-table-column width="150" prop="lastCheck.timeString" label="更新时间"/>
+        <el-table-column v-if="isPermitted(`主题:修改:分类`)" label="正文长度" prop="contentLength" width="80"/>
+        <el-table-column label="最后修改" prop="lastEdit.timeString" width="150">
+          <!--suppress HtmlUnknownAttribute -->
+          <template #default="s">
+            <el-tooltip placement="top">
+              <template #content>
+                <div>发布时间:{{ s.row.postTimestamp.timeString }}</div>
+                <div>更新时间:{{ s.row.lastCheck.timeString }}</div>
+              </template>
+              <span> {{ s.row.lastEdit.timeString }}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <!--        <el-table-column width="150" prop="postTimestamp.timeString" label="发布时间"/>-->
+        <!--        <el-table-column width="150" prop="lastCheck.timeString" label="更新时间"/>-->
       </el-table>
 
     </el-main>
