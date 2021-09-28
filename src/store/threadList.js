@@ -58,6 +58,7 @@ export default {
                 url: `/${prefix}/setThreadType`,
                 params: {typeUuid, tid}
             }).then(() => {
+                state.threads = {};
                 return dispatch("page", fid)
             })
         },
