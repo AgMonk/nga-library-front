@@ -56,6 +56,12 @@ export const routes = [
                 component: () => import("../views/manage/Repost"),
                 permission: `转发:查询:*`,
             },
+            {
+                path: `messageBoard`,
+                name: `留言板管理`,
+                component: () => import("../views/manage/MessageBoard"),
+                permission: `留言板:查询:*`,
+            },
 
         ]
     }
