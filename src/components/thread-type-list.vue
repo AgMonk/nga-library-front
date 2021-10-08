@@ -26,7 +26,8 @@
             <i class="el-icon-delete" @click="del(data)"/>
 &nbsp;
             <i v-if="data.pid" class="el-icon-share" @click="exportType({fid,pid:data.pid})"/>
-&nbsp;{{ data.pid }}
+&nbsp;&nbsp;
+            <el-link :href="`https://bbs.nga.cn/read.php?pid=`+data.pid" target="_blank">&nbsp;{{ data.pid }}</el-link>
           </span>
         </span>
         </template>
