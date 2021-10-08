@@ -27,6 +27,11 @@ export default {
             params: {uuid}
         }).then(() => dispatch("findAll")),
 
+        exportToPid: ({dispatch, state}, {fid, pid}) => request({
+            url: `/${prefix}/export`,
+            params: {fid, pid},
+        }),
+
         findAll: ({dispatch, commit, state}) => request({
             url: `/${prefix}/findAll`,
         }).then(res => {

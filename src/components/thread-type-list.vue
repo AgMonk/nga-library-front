@@ -23,7 +23,10 @@
           &nbsp;
             <i class="el-icon-edit" @click="edit(data,node)"/>
           &nbsp;
-            <i class="el-icon-delete"  @click="del(data)"/>
+            <i class="el-icon-delete" @click="del(data)"/>
+&nbsp;
+            <i v-if="data.pid" class="el-icon-share" @click="exportType({fid,pid:data.pid})"/>
+&nbsp;{{ data.pid }}
           </span>
         </span>
         </template>
@@ -33,6 +36,9 @@
         <el-form :model="params" label-width="80px">
           <el-form-item label="分类名称">
             <el-input v-model="params.name" clearable ref="nameInput"/>
+          </el-form-item>
+          <el-form-item label="发布Pid">
+            <el-input ref="pidInput" v-model="params.pid" clearable type="number"/>
           </el-form-item>
           <el-form-item label="上级分类" v-if="dialogTitle!==`添加主分类`">
             <el-cascader
@@ -60,7 +66,7 @@
 <script>
 //查询当前节点的完整 uuid 路径
 import {copyObj} from "@/assets/js/utils";
-import {mapState} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 const findPath = (node) => {
   let uuid = node.data.uuid;
@@ -86,10 +92,17 @@ export default {
     })
   },
   methods: {
+    ...mapActions("library", [`exportToPid`]),
+    exportType(params) {
+      this.exportToPid(params).then(res => {
+        this.$message.success(res.message)
+        window.open(res.data)
+      })
+    },
     nodeChange(e) {
-      if(e){
+      if (e) {
         this.params.parentUuid = e[e.length - 1];
-      }else{
+      } else {
         this.params.parentUuid = undefined;
       }
       console.log(this.params)
