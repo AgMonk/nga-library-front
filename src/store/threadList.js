@@ -26,7 +26,10 @@ export default {
     mutations: {
         setParams(state, {key, params}) {
             state.params[key] = copyObj(params);
-        }
+        },
+        clearCache(state) {
+            state.threads = {}
+        },
     },
     actions: {
         page: ({dispatch, commit, state}, fid) => {
@@ -58,7 +61,6 @@ export default {
                 url: `/${prefix}/setThreadType`,
                 params: {typeUuid, tid}
             }).then(() => {
-                state.threads = {};
                 return dispatch("page", fid)
             })
         },

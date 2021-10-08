@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
 import {copyObj} from "@/assets/js/utils";
 
 export default {
@@ -142,7 +142,8 @@ export default {
       types: state => state.threadType.types,
       conditions: state => state.threadTypeCondition.conditions,
       titleColor: state => state.threadList.titleColor,
-    })
+    }),
+    ...mapMutations(`threadList`, [`clearCache`]),
   },
   methods: {
     createEmptyCondition() {
@@ -173,7 +174,10 @@ export default {
     },
     del(uuid) {
       if (confirm(`确认删除`)) {
-        this.$store.dispatch("threadTypeCondition/del", {uuid, params: this.params}).then(res => this.total = res.total)
+        this.$store.dispatch("threadTypeCondition/del", {uuid, params: this.params}).then(res => {
+          this.clearCache()
+          return this.total = res.total;
+        })
       }
     },
     getPage() {
@@ -193,6 +197,7 @@ export default {
             this.$message.success("添加成功")
             this.dialogShow = false;
             this.total = res.total
+            this.clearCache()
           })
           break;
         case "修改分类":
@@ -200,6 +205,7 @@ export default {
             this.$message.success("修改成功")
             this.dialogShow = false;
             this.total = res.total
+            this.clearCache()
           })
           break;
       }
