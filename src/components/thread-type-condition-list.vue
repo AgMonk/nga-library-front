@@ -31,7 +31,7 @@
             <!--                :options="types[fid].data"-->
             <!--                :props="{ expandTrigger: 'hover',label:`name`,value:`uuid`,checkStrictly:true,emitPath:false }"-->
             <!--            />-->
-            <span>{{ s.row.threadType.fullPath.join('/') }}</span>
+            <span v-if="s.row.threadType && s.row.threadType.fullPath">{{ s.row.threadType.fullPath.join('/') }}</span>
           </template>
         </el-table-column>
         <el-table-column label="标题颜色" prop="titleColor"/>
