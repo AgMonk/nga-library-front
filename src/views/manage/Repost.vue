@@ -175,14 +175,14 @@ export default {
       const pixiv_pattern = /(\d+)_p\d+/
       let m1 = pixiv_pattern.exec(name)
       if (m1) {
-        this.data.params.source = `pixiv.net/artworks/${m1[1]}`
+        this.data.params.source = `pix:${m1[1]}`
         this.update(this.data)
       }
       //判断是否为推特图片
       const twitter_pattern = /(\d{19})/
       let m2 = twitter_pattern.exec(name)
       if (m2) {
-        this.data.params.source = `twitter.com/i/status/${m2[1]}`
+        this.data.params.source = `twi:${m2[1]}`
         this.update(this.data)
       }
     },
