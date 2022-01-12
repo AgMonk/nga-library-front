@@ -25,10 +25,8 @@ export default {
       if (e) {
         this.tid = e.tid;
         this.subject = unEscape(e.subject);
-        if (e.hasOwnProperty("titleFont") && e.titleFont.length === 4) {
-          const color = e.titleFont.substring(0, 2);
-          const bold = e.titleFont.substring(2, 4);
-          this.bold = bold === `加粗`;
+        const {color, bold} = e;
+        if (color) {
           switch (color) {
             case `灰色`:
               this.type = `info`;
@@ -47,6 +45,8 @@ export default {
               break;
           }
         }
+        this.bold = bold;
+
       }
     },
   },

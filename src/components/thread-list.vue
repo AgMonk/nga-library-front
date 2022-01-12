@@ -11,7 +11,7 @@
       </el-pagination>
       <el-form inline label-width="100">
         <el-form-item label="标题颜色">
-          <el-select v-if="params.condition" v-model="params.condition.titleFont" clearable @change="getPageData">
+          <el-select v-if="params.condition" v-model="params.condition.color" clearable @change="getPageData">
             <el-option v-for="(color,i) in titleColor" :key="i" :value="color">{{ color }}</el-option>
           </el-select>
         </el-form-item>
@@ -19,7 +19,7 @@
           <el-cascader
               v-if="types[fid] && params.condition"
               v-model="params.condition.threadTypeUuid"
-              :options="[{name:`全部`,uuid:`*`},{name:`未分类`,uuid:``},...types[fid].data]"
+              :options="threadTypeOptions"
               :props="cascaderProps"
               clearable
               filterable
@@ -126,7 +126,7 @@ export default {
   data() {
     return {
       cascaderProps: {expandTrigger: 'hover', label: `name`, value: `uuid`, checkStrictly: true, emitPath: false},
-
+      threadTypeOptions: [],
       total: 100,
       params: {
         page: 1,
@@ -135,6 +135,7 @@ export default {
           fid: this.fid,
           threadTypeUuid: "*",
           includeChildren: true,
+          color: '',
         }
       },
       threadTypeUuid: ``,
@@ -175,6 +176,9 @@ export default {
     onMount() {
       this.getPageData();
       this.$store.dispatch("threadType/getAll", this.fid)
+    },
+    updateThreadTypeOptions(type) {
+      this.threadTypeOptions = [{name: `全部`, uuid: `*`}, {name: `未分类`, uuid: ``}, ...type[this.fid].data]
     }
   },
   unmounted() {
@@ -184,8 +188,12 @@ export default {
     const cache = this.$store.state.threadList.params[this.fid];
     this.params = cache ? cache : this.params;
     this.onMount()
+    this.updateThreadTypeOptions(this.types)
   },
   watch: {
+    types(to) {
+      this.updateThreadTypeOptions(to)
+    },
     "fid": {
       handler: function (e) {
         this.onMount()
