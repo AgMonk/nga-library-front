@@ -50,6 +50,14 @@ export default {
                 return dispatch("page");
             }
         },
+        countByAuthorId: ({dispatch, commit, state}, {tid, start, end, limit}) => {
+            return request({
+                url: `/${prefix}/countByAuthorId`,
+                params: {
+                    tid, start, end, limit
+                }
+            })
+        },
         method: ({dispatch, commit, state}, payload) => {
 
         },
